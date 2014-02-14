@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir=".." name="RobotTest1-IDE">
+<project basedir=".." name="PopeBot-IDE">
     <property file="${user.home}/.sunspotfrc.properties"/>
     <property file="build.properties"/>
     <property file="${sunspot.home}/default.properties"/>
