@@ -32,6 +32,7 @@ public class XboxController extends GenericHID implements IInputOutput {
         private static final int kRightX_val = 4;
         private static final int kRightY_val = 5;
         private static final int kDLeftRight_val = 6;
+        private static final int kDUpDown_val = 7;
         
         private AxisType(int value) {
             this.value = value;
@@ -66,6 +67,11 @@ public class XboxController extends GenericHID implements IInputOutput {
          * Axis: D-Pad Left-Right
          */
         public static final AxisType kDLeftRight = new AxisType(kDLeftRight_val);
+        
+        /**
+         * Axis: D-Pad Left-Right - DK
+         */
+        public static final AxisType kDUpDown = new AxisType(kDUpDown_val);
     }
     
     /**
