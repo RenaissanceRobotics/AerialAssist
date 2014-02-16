@@ -47,7 +47,7 @@ public class TestDriver implements Driver {
         if (Robot.isReload || Robot.xbox.getXButton()) {
             Robot.reload();
         } else if (Robot.xbox.getTrigger(GenericHID.Hand.kRight) || Robot.xbox.getTrigger(GenericHID.Hand.kLeft)) {
-            Robot.shoot();
+            Robot.shoot(true);
         }
         // Spin 
         if (Robot.xbox.getAxis(XboxController.AxisType.kDLeftRight) > 0.5) {

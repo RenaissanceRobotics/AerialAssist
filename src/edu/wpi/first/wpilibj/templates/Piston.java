@@ -16,6 +16,10 @@ public class Piston {
         
         count = 0;
     }
+    
+    public void setExtended (boolean isExtended) {
+        this.isExtended = isExtended;
+    }
 
     public void extend() {
         this.retract.set(false);
