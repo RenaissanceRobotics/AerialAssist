@@ -13,39 +13,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SimpleRobot {
 
-    // make inital position of pistons in smartdashboard
-    // make all auto positions in smartdashboard
     // make display of ready to fire
     // get up down on dpad
-    static XboxController xbox, xbox2;
-    static Gyro gyro;
-
-    static RobotDrive drive;
-
+    
+    // What I have: all are different
+    // Robot#driver
+    // Driver
+    // Options$Driver
+    // Options#getDriver
+    // Options#driver
+    // Options#getSelectedDriver
+    
+    private Options options;
+    
     static Victor left1, left2;
     static Victor right1, right2;
+    static RobotDrive drive;
+    
+    static XboxController xbox, xbox2;
+    static Gyro gyro;
 
     static Compressor compressor;
 
     static Encoder encoder;
 
-    static boolean xButton, bButton;
-
     static Piston trigger, shooter;
     static Piston arms, grip;
 
-    static double delay;
-    static final double TRIGGER_DELAY = 0.1, SHOOTER_DELAY = 0, ARMS_DELAY = 0, GRIP_DELAY = 0;
-
-    static boolean isReload;
-
     static DigitalInput triggerSwitch;
 
-    protected Driver driver = new DualDriver();
+    protected Driver driver;
 
     static final int DISTANCE_FROM_WALL_TO_SHOOT = 11 * 12; // 11 feet
+    static boolean isReload;
 
-    private Options options;
 
     public void robotInit() {
 
@@ -63,12 +64,11 @@ public class Robot extends SimpleRobot {
         Robot.left2 = new Victor(4);
         Robot.right1 = new Victor(1);
         Robot.right2 = new Victor(3);
+        Robot.drive = new RobotDrive(left1, left2, right1, right2);
 
         Robot.xbox = new XboxController(1);
         Robot.xbox2 = new XboxController(2);
-
-        Robot.drive = new RobotDrive(left1, left2, right1, right2);
-
+        
         Robot.gyro = new Gyro(1);
         Robot.gyro.setSensitivity(0.007);
 
@@ -88,19 +88,28 @@ public class Robot extends SimpleRobot {
     }
 
     public void autonomous() {
+        Robot.start();
         
+        System.out.print(options.getSelectedPosition().toString());
+        System.out.print(" " + options.getSelectedDriveDirection().toString());
+        System.out.print(" " + options.getSelectedTrunAmount().toString());
+        
+        Robot.stop();
     }
 
     public void operatorControl() {
-        
+        if (options.getDriver(Options.Driver.DUAL_DRIVER)) {
+            this.driver = new DualDriver();
+        } else if (options.getDriver(Options.Driver.TEST_DRIVER)) {
+            this.driver = new TestDriver();
+        }
+
         trigger.setExtended(options.getPiston(options.trigger, Options.Piston.EXTENDED));
         shooter.setExtended(options.getPiston(options.shooter, Options.Piston.EXTENDED));
         arms.setExtended(options.getPiston(options.arms, Options.Piston.EXTENDED));
         grip.setExtended(options.getPiston(options.grip, Options.Piston.EXTENDED));
-
-        gyro.reset();
-        compressor.start();
-        encoder.start();
+        
+        Robot.start();
 
         //Robot.reload();
         while (isOperatorControl() && isEnabled()) {
@@ -115,7 +124,7 @@ public class Robot extends SimpleRobot {
             Robot.trigger.countTime();
 
         }
-        Robot.compressor.stop();
+        Robot.stop();
     }
 
     public void test() {
@@ -126,40 +135,8 @@ public class Robot extends SimpleRobot {
 
         Robot.compressor.start();
 
-        boolean isDrivingStright = false;
-
         while (isTest() && isEnabled()) {
-            double rightX = Robot.xbox.getAxis(XboxController.AxisType.kRightX);
-            double leftY = Robot.xbox.getAxis(XboxController.AxisType.kLeftY);
 
-            double maxCentreValue = 0.2;
-            double Kp = 0.03;
-            int speed = 2;
-
-            if (leftY <= maxCentreValue & leftY >= -maxCentreValue) {
-                Robot.drive(rightX, rightX);
-                System.out.print("turn: ");
-
-                isDrivingStright = false;
-            } else if (rightX <= maxCentreValue & rightX >= -maxCentreValue) { // stright
-                if (!isDrivingStright) {
-                    isDrivingStright = true;
-                    Robot.gyro.reset();
-                }
-                if (leftY <= -maxCentreValue) {
-                    Robot.drive.drive(-leftY / speed, -Robot.gyro.getAngle() * Kp);
-                } else if (leftY >= maxCentreValue) {
-                    Robot.drive.drive(-leftY / speed, Robot.gyro.getAngle() * Kp);
-                }
-                System.out.print("gyro: ");
-            } else {
-                Robot.drive.drive(-leftY / speed, rightX / 1.5);
-                System.out.print("control: ");
-
-                isDrivingStright = false;
-            }
-            System.out.print("left: " + leftY + " right: " + rightX);
-            System.out.println();
         }
         Robot.compressor.stop();
 
@@ -202,6 +179,7 @@ public class Robot extends SimpleRobot {
     }
 
     public static void reload() {
+        //<editor-fold defaultstate="collapsed" desc="Reload">
         if (!Robot.isReload) {
             Robot.shooter.extend();
             Robot.isReload = true;
@@ -210,11 +188,15 @@ public class Robot extends SimpleRobot {
                 Robot.shooter.off();
                 Robot.shooter.retract();
                 Robot.isReload = false;
+                
+                // TODO: play sound?
             }
         }
+        //</editor-fold>
     }
 
     public static void shoot(boolean doReload) {
+        //<editor-fold defaultstate="collapsed" desc="Shoot">
         if (Robot.grip.isRetracted()) {
             Robot.grip.extend();
             Timer.delay(0.25);
@@ -227,29 +209,6 @@ public class Robot extends SimpleRobot {
         if (doReload) {
             Robot.reload();
         }
-    }
-
-    public static void grapBall() {
-        //<editor-fold defaultstate="collapsed" desc="Grab Ball">
-        if (Robot.arms.isRetracted() & Robot.grip.isExtended()) {
-            Robot.arms.extend();
-            Robot.grip.retract();
-            Robot.delay = ARMS_DELAY + GRIP_DELAY;
-        } else if (Robot.arms.isRetracted()) {
-            Robot.arms.extend();
-            Robot.delay = ARMS_DELAY;
-        } else if (Robot.grip.isExtended()) {
-            Robot.grip.retract();
-            Robot.delay = GRIP_DELAY;
-            Timer.delay(Robot.delay);
-        }
-        Robot.grip.extend();
-        Robot.grip.retract();
-        Timer.delay(0.3);
-        Robot.arms.retract();
-        Timer.delay(1.0);
-        Robot.grip.off();
-        Robot.arms.off();
         //</editor-fold>
     }
 
@@ -270,11 +229,25 @@ public class Robot extends SimpleRobot {
     }
 
     public static void disableShooter() {
+        //<editor-fold defaultstate="collapsed" desc="Disable Shooter">
         Robot.shooter.extend();
         Timer.delay(0.5);
         Robot.trigger.extend();
         Timer.delay(0.1);
         Robot.shooter.retract();
         Robot.trigger.retract();
+        //</editor-fold>
+    }
+    
+    public static void start () {
+        Robot.gyro.reset();
+        Robot.compressor.start();
+        Robot.encoder.start();
+    }
+    
+    public static void stop () {
+        Robot.gyro.reset();
+        Robot.compressor.stop();
+        Robot.encoder.stop();
     }
 }

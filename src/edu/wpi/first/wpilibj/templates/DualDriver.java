@@ -6,9 +6,8 @@ import edu.wpi.first.wpilibj.Timer;
 public class DualDriver implements Driver {
 
     private int speed;
-    private final double Kp = 0.01,  MAX_CENTRE_VALUE = 0.2;
-    private boolean isDrivingStright = false;
-    
+    private final double Kp = 0.01, MAX_CENTRE_VALUE = 0.2;
+    private boolean isDrivingStraight = false;
 
     public DualDriver() {
         speed = 2;
@@ -23,10 +22,14 @@ public class DualDriver implements Driver {
         if (leftY <= MAX_CENTRE_VALUE & leftY >= -MAX_CENTRE_VALUE) {
             Robot.drive(rightX, rightX);
 
-            this.isDrivingStright = false;
+            this.isDrivingStraight = false;
         } else if (rightX <= MAX_CENTRE_VALUE & rightX >= -MAX_CENTRE_VALUE) { // stright
-            if (!this.isDrivingStright) {
-                this.isDrivingStright = true;
+            if (!this.isDrivingStraight) {
+                this.isDrivingStraight = true;
+            }
+        } else if (rightX <= MAX_CENTRE_VALUE & rightX >= -MAX_CENTRE_VALUE) { // stright
+            if (!this.isDrivingStraight) {
+                this.isDrivingStraight = true;
                 Robot.gyro.reset();
             }
             if (leftY <= -MAX_CENTRE_VALUE) {
@@ -37,7 +40,7 @@ public class DualDriver implements Driver {
         } else {
             Robot.drive.drive(-leftY / speed, rightX / 1.5);
 
-            this.isDrivingStright = false;
+            this.isDrivingStraight = false;
         }
 
         if (Robot.xbox.getAxis(XboxController.AxisType.kDLeftRight)

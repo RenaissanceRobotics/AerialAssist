@@ -6,6 +6,7 @@ public class Options {
 
     public final SendableChooser position, driveDirection, turnAmount;
     public final SendableChooser trigger, shooter, grip, arms;
+    public final SendableChooser driver;
 
     
     public static class Position {
@@ -15,9 +16,14 @@ public class Options {
         private static final int val_LEFT = 0;
         private static final int val_MIDDLE = 1;
         private static final int val_RIGHT = 2;
+        private static final String[] val_STRINGS = {"Left Side", "Middle", "Right Side"};
         
         private Position (int value) {
             this.value = value;
+        }
+        
+        public String toString () {
+            return val_STRINGS[this.value];
         }
         
         public static final Position LEFT = new Position (val_LEFT);
@@ -32,9 +38,14 @@ public class Options {
         
         private static final int val_RIGHT = 0;
         private static final int val_LEFT = 1;
+        private static final String[] val_STRINGS = {"Go Right", "Go Left"};
         
         private DriveDirection (int value) {
             this.value = value;
+        }
+        
+        public String toString () {
+            return val_STRINGS[this.value];
         }
         
         public static final DriveDirection RIGHT = new DriveDirection (val_RIGHT);
@@ -48,9 +59,14 @@ public class Options {
         
         private static final int val_90 = 0;
         private static final int val_45 = 1;
+        private static final String[] val_STRINGS = {"Turn 90", "Turn 45"};
         
         private TurnAmount (int value) {
             this.value = value;
+        }
+        
+        public String toString () {
+            return val_STRINGS[this.value];
         }
         
         public static final TurnAmount DEGREES_90 = new TurnAmount (val_90);
@@ -59,6 +75,7 @@ public class Options {
     }
     
     public static class Piston {
+        //<editor-fold defaultstate="collapsed" desc="Pistion">
         private final int value;
         
         private static final int val_EXTENDED = 0;
@@ -70,6 +87,29 @@ public class Options {
         
         public static final Piston EXTENDED = new Piston (val_EXTENDED);
         public static final Piston RETRACTED = new Piston (val_RETRACTED);
+        //</editor-fold>
+    }
+    
+    public static class Driver {
+        //<editor-fold defaultstate="collapsed" desc="Driver">
+        private final int value;
+        
+        private static final int val_TEST_DRIVER = 0;
+        private static final int val_DUAL_DRIVER = 1;
+        
+        private static final String[] val_STRINGS = {"Test Driver", "Dual Driver"};
+        
+        private Driver (int value) {
+            this.value = value;
+        }
+        
+        public String toString () {
+            return val_STRINGS[this.value];
+        }
+        
+        public static final Driver TEST_DRIVER = new Driver (val_TEST_DRIVER);
+        public static final Driver DUAL_DRIVER = new Driver (val_DUAL_DRIVER);
+        //</editor-fold>
     }
 
     public Options() {
@@ -90,36 +130,64 @@ public class Options {
         
         trigger = new SendableChooser();
         trigger.addObject("Extended", Piston.EXTENDED);
-        trigger.addObject("Retracted", Piston.RETRACTED);
+        trigger.addDefault("Retracted", Piston.RETRACTED);
         
         shooter = new SendableChooser();
         shooter.addObject("Extended", Piston.EXTENDED);
-        shooter.addObject("Retracted", Piston.RETRACTED);
+        shooter.addDefault("Retracted", Piston.RETRACTED);
         
         grip = new SendableChooser();
         grip.addObject("Extended", Piston.EXTENDED);
-        grip.addObject("Retracted", Piston.RETRACTED);
+        grip.addDefault("Retracted", Piston.RETRACTED);
         
         arms = new SendableChooser();
         arms.addObject("Extended", Piston.EXTENDED);
-        arms.addObject("Retracted", Piston.RETRACTED);
+        arms.addDefault("Retracted", Piston.RETRACTED);
         
         // </Pistons>
+        
+        driver = new SendableChooser();
+        driver.addDefault("Dual Driver", Driver.DUAL_DRIVER);
+        driver.addObject("Test Driver", Driver.TEST_DRIVER);
     }
     
     public boolean getPosition (Position position) {
         return this.position.getSelected() == position;
     }
     
+    public Object getSelectedPosition () {
+        return this.position.getSelected();
+    }
+    
     public boolean getDriveDirection (DriveDirection driveDirection) {
         return this.driveDirection.getSelected() == driveDirection;
+    }
+    
+    public Object getSelectedDriveDirection () {
+        return this.driveDirection.getSelected();
     }
     
     public boolean getTurnAmount (TurnAmount turnAmount) {
         return this.turnAmount.getSelected() == turnAmount;
     }
     
+    public Object getSelectedTrunAmount () {
+        return this.turnAmount.getSelected();
+    }
+    
     public boolean getPiston (SendableChooser pistonOption, Piston piston) {
         return pistonOption.getSelected() == piston;
+    }
+    
+    public Object getSelectedPiston (SendableChooser pistionOption) {
+        return pistionOption.getSelected();
+    }
+    
+    public boolean getDriver (Driver driverOption) {
+        return this.driver.getSelected() == driverOption;
+    }
+    
+    public Object getSelectedDriver () {
+        return this.driver.getSelected();
     }
 }
