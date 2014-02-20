@@ -26,10 +26,6 @@ public class DualDriver implements Driver {
         } else if (rightX <= MAX_CENTRE_VALUE & rightX >= -MAX_CENTRE_VALUE) { // stright
             if (!this.isDrivingStraight) {
                 this.isDrivingStraight = true;
-            }
-        } else if (rightX <= MAX_CENTRE_VALUE & rightX >= -MAX_CENTRE_VALUE) { // stright
-            if (!this.isDrivingStraight) {
-                this.isDrivingStraight = true;
                 Robot.gyro.reset();
             }
             if (leftY <= -MAX_CENTRE_VALUE) {
@@ -67,17 +63,15 @@ public class DualDriver implements Driver {
         }
 
         // Driver Two:
-        if (Robot.xbox2.getAxis(XboxController.AxisType.kLeftY)
-                > 0.5) {
+        if (Robot.xbox2.getAxis(XboxController.AxisType.kLeftY) > 0.5) {
+            if (Robot.arms.isRetracted()) {
+                Robot.arms.extend();
+            }
+        } else if (Robot.xbox2.getAxis(XboxController.AxisType.kLeftY) < -0.5) {
             if (Robot.grip.isExtended()) {
                 Robot.grip.retract();
                 Timer.delay(0.5);
             }
-            if (Robot.arms.isRetracted()) {
-                Robot.arms.extend();
-            }
-        } else if (Robot.xbox2.getAxis(XboxController.AxisType.kLeftY)
-                < -0.5) {
             if (Robot.arms.isExtended()) {
                 Robot.arms.retract();
             }

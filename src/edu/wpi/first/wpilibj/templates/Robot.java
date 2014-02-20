@@ -15,7 +15,6 @@ public class Robot extends SimpleRobot {
 
     // make display of ready to fire
     // get up down on dpad
-    
     // What I have: all are different
     // Robot#driver
     // Driver
@@ -23,13 +22,12 @@ public class Robot extends SimpleRobot {
     // Options#getDriver
     // Options#driver
     // Options#getSelectedDriver
-    
     private Options options;
-    
+
     static Victor left1, left2;
     static Victor right1, right2;
     static RobotDrive drive;
-    
+
     static XboxController xbox, xbox2;
     static Gyro gyro;
 
@@ -47,7 +45,6 @@ public class Robot extends SimpleRobot {
     static final int DISTANCE_FROM_WALL_TO_SHOOT = 11 * 12; // 11 feet
     static boolean isReload;
 
-
     public void robotInit() {
 
         this.options = new Options();
@@ -59,6 +56,7 @@ public class Robot extends SimpleRobot {
         SmartDashboard.putData("Shooter Piston", this.options.shooter);
         SmartDashboard.putData("Arm Piston", this.options.arms);
         SmartDashboard.putData("Grip Piston", this.options.grip);
+        SmartDashboard.putData("Driver", this.options.driver);
 
         Robot.left1 = new Victor(2);
         Robot.left2 = new Victor(4);
@@ -68,7 +66,7 @@ public class Robot extends SimpleRobot {
 
         Robot.xbox = new XboxController(1);
         Robot.xbox2 = new XboxController(2);
-        
+
         Robot.gyro = new Gyro(1);
         Robot.gyro.setSensitivity(0.007);
 
@@ -89,11 +87,44 @@ public class Robot extends SimpleRobot {
 
     public void autonomous() {
         Robot.start();
-        
+
         System.out.print(options.getSelectedPosition().toString());
         System.out.print(" " + options.getSelectedDriveDirection().toString());
         System.out.print(" " + options.getSelectedTrunAmount().toString());
-        
+        System.out.println();
+
+        if (options.getPosition(Options.Position.LEFT) || options.getPosition(Options.Position.RIGHT)) {
+            Robot.grip.extend();
+            Robot.driveDistance(-132);
+            Robot.shoot(true);
+        } else if (options.getPosition(Options.Position.MIDDLE)) {
+            if (options.getDriveDirection(Options.DriveDirection.LEFT)) {
+                if (options.getTurnAmount(Options.TurnAmount.DEGREES_90)) {
+                    Robot.spinAround(90);
+                    Robot.driveDistance(6 * 12);
+                    Robot.spinAround(-90);
+                    Robot.shoot(true);
+                } else if (options.getTurnAmount(Options.TurnAmount.DEGREES_45)) {
+                    Robot.spinAround(45);
+                    Robot.driveDistance((int) (12.5 * 12));
+                    Robot.spinAround(-45);
+                    Robot.shoot(true);
+                }
+            } else if (options.getDriveDirection(Options.DriveDirection.RIGHT)) {
+                if (options.getTurnAmount(Options.TurnAmount.DEGREES_90)) {
+                    Robot.spinAround(-90);
+                    Robot.driveDistance(6 * 12);
+                    Robot.spinAround(90);
+                    Robot.shoot(true);
+                } else if (options.getTurnAmount(Options.TurnAmount.DEGREES_45)) {
+                    Robot.spinAround(-45);
+                    Robot.driveDistance((int) (12.5 * 12));
+                    Robot.spinAround(45);
+                    Robot.shoot(true);
+                }
+            }
+        }
+
         Robot.stop();
     }
 
@@ -108,7 +139,7 @@ public class Robot extends SimpleRobot {
         shooter.setExtended(options.getPiston(options.shooter, Options.Piston.EXTENDED));
         arms.setExtended(options.getPiston(options.arms, Options.Piston.EXTENDED));
         grip.setExtended(options.getPiston(options.grip, Options.Piston.EXTENDED));
-        
+
         Robot.start();
 
         //Robot.reload();
@@ -188,7 +219,7 @@ public class Robot extends SimpleRobot {
                 Robot.shooter.off();
                 Robot.shooter.retract();
                 Robot.isReload = false;
-                
+
                 // TODO: play sound?
             }
         }
@@ -199,7 +230,7 @@ public class Robot extends SimpleRobot {
         //<editor-fold defaultstate="collapsed" desc="Shoot">
         if (Robot.grip.isRetracted()) {
             Robot.grip.extend();
-            Timer.delay(0.25);
+            Timer.delay(0.10);
             Robot.grip.off();
         }
         Robot.trigger.extend();
@@ -214,14 +245,16 @@ public class Robot extends SimpleRobot {
 
     public static void driveDistance(int inches) {
         //<editor-fold defaultstate="collapsed" desc="Drive Distance">
+        double Kp = 0.01;
         Robot.encoder.reset();
+        gyro.reset();
         if (inches > 0) {
             while (Robot.encoder.getDistance() <= inches) {
-                Robot.drive(0.33, -0.25);
+                Robot.drive.drive(0.75, -Robot.gyro.getAngle() * Kp);
             }
         } else {
             while (Robot.encoder.getDistance() >= inches) {
-                Robot.drive(-0.33, 0.25);
+                Robot.drive.drive(-0.75, Robot.gyro.getAngle() * Kp);
             }
         }
         Robot.drive(0.0);
@@ -238,14 +271,14 @@ public class Robot extends SimpleRobot {
         Robot.trigger.retract();
         //</editor-fold>
     }
-    
-    public static void start () {
+
+    public static void start() {
         Robot.gyro.reset();
         Robot.compressor.start();
         Robot.encoder.start();
     }
-    
-    public static void stop () {
+
+    public static void stop() {
         Robot.gyro.reset();
         Robot.compressor.stop();
         Robot.encoder.stop();

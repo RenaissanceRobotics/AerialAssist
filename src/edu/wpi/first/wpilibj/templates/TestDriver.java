@@ -55,7 +55,5 @@ public class TestDriver implements Driver {
         } else if (Robot.xbox.getAxis(XboxController.AxisType.kDLeftRight) < -0.5) {
             Robot.spinAround(-180);
         }
-
-        System.out.println("ENCODER: " + Robot.encoder.getDistance());
     }
 }
