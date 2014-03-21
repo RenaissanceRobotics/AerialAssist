@@ -33,23 +33,17 @@ public class Robot extends SimpleRobot {
 
     protected Driver driver;
 
-<<<<<<< HEAD
     static final int DISTANCE_TO_SHOOT_FROM_START = 6 * 12; // 6 feet
     static final double time_TRIGGER = 0.0, time_SHOOTER = 0.0;
     static final double time_ARMS = 0.0, time_GRIP = 0.0;
-=======
-    static final int DISTANCE = 6 * 12; // 6 feet
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
+
     static boolean isReload;
 
     public void robotInit() {
 
         this.options = new Options();
 
-<<<<<<< HEAD
         SmartDashboard.putData("Auto Mode", this.options.autoMode);
-=======
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
         SmartDashboard.putData("Trigger Piston", this.options.trigger);
         SmartDashboard.putData("Shooter Piston", this.options.shooter);
         SmartDashboard.putData("Arm Piston", this.options.arms);
@@ -87,7 +81,6 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         Robot.start();
 
-<<<<<<< HEAD
         if (this.options.getAutoMode(Options.AutoMode.ONE_BALL)) {
             Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
             Robot.shoot(true);
@@ -110,11 +103,6 @@ public class Robot extends SimpleRobot {
             }
 
         }
-=======
-        Robot.grip.extend();
-        Robot.driveDistance(-Robot.DISTANCE);
-        Robot.shoot(true);
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
 
         Robot.stop();
     }

@@ -5,11 +5,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DualDriver implements Driver {
 
-<<<<<<< HEAD
-    private final double Kp = 0.01, MAX_CENTRE_VALUE = 0.2;
-=======
     private final double Kp = 0.03, MAX_CENTRE_VALUE = 0.2;
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
+
     private boolean isDrivingStraight = false;
 
     public DualDriver() {

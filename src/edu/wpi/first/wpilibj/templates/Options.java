@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class Options {
 
-<<<<<<< HEAD
     public final SendableChooser autoMode;
     public final SendableChooser trigger, shooter, grip, arms;
     public final SendableChooser driver;
@@ -26,14 +25,6 @@ public class Options {
         //</editor-fold>
     }
 
-=======
-    public final SendableChooser trigger, shooter, grip, arms;
-    public final SendableChooser driver;
-
-    
-    
-    
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
     public static class Piston {
 
         //<editor-fold defaultstate="collapsed" desc="Piston">
@@ -74,11 +65,7 @@ public class Options {
         //</editor-fold>
     }
 
-<<<<<<< HEAD
-    public Options() {
-=======
     public Options() {        
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
         // <Pistons>
 
         autoMode = new SendableChooser();
@@ -106,21 +93,16 @@ public class Options {
         driver.addDefault("Dual Driver", Driver.DUAL_DRIVER);
         driver.addObject("Test Driver", Driver.TEST_DRIVER);
     }
-<<<<<<< HEAD
 
     public boolean getAutoMode(AutoMode autoModeOption) {
         return this.autoMode.getSelected() == autoModeOption;
     }
 
-    public Object getSelectedautoMode() {
+    public Object getSelectedAutoMode() {
         return this.autoMode.getSelected();
     }
 
     public boolean getPiston(SendableChooser pistonOption, Piston piston) {
-=======
-    
-    public boolean getPiston (SendableChooser pistonOption, Piston piston) {
->>>>>>> 92b52c36d9a3e4e7f9058f310374c5898ef3623d
         return pistonOption.getSelected() == piston;
     }
 
