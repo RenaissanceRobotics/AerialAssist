@@ -5,12 +5,10 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DualDriver implements Driver {
 
-    private int speed;
-    private final double Kp = 0.01, MAX_CENTRE_VALUE = 0.2;
+    private final double Kp = 0.03, MAX_CENTRE_VALUE = 0.2;
     private boolean isDrivingStraight = false;
 
     public DualDriver() {
-        speed = 2;
     }
 
     public void drive() {
@@ -29,37 +27,14 @@ public class DualDriver implements Driver {
                 Robot.gyro.reset();
             }
             if (leftY <= -MAX_CENTRE_VALUE) {
-                Robot.drive.drive(-leftY / speed, -Robot.gyro.getAngle() * Kp);
+                Robot.drive.drive(-leftY, -Robot.gyro.getAngle() * Kp);
             } else if (leftY >= MAX_CENTRE_VALUE) {
-                Robot.drive.drive(-leftY / speed, Robot.gyro.getAngle() * Kp);
+                Robot.drive.drive(-leftY, Robot.gyro.getAngle() * Kp);
             }
         } else {
-            Robot.drive.drive(-leftY / speed, rightX / 1.5);
+            Robot.drive.drive(-leftY, rightX / 1.5);
 
             this.isDrivingStraight = false;
-        }
-
-        if (Robot.xbox.getAxis(XboxController.AxisType.kDLeftRight)
-                > 0.5) {
-            Robot.spinAround(90);
-        } else if (Robot.xbox.getAxis(XboxController.AxisType.kDLeftRight)
-                < -0.5) {
-            Robot.spinAround(-90);
-        } /*else if (Robot.xbox.getAxis(XboxController.AxisType.kDUpDown) > 0.5) {
-         Robot.spinAround(180);
-         } else if (Robot.xbox.getAxis(XboxController.AxisType.kDUpDown) > -0.5) {
-         Robot.spinAround(180);
-         } */
-
-
-        if (Robot.xbox.getStart()) {
-            this.speed = 1;
-        } else if (Robot.xbox.getBack()) {
-            this.speed = 2;
-        }
-
-        if (Robot.xbox.getAButton()) {
-            Robot.driveDistance(Robot.DISTANCE_FROM_WALL_TO_SHOOT); // 11 feet
         }
 
         // Driver Two:

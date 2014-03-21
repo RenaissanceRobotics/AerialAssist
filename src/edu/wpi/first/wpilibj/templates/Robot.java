@@ -13,15 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SimpleRobot {
 
-    // make display of ready to fire
-    // get up down on dpad
-    // What I have: all are different
-    // Robot#driver
-    // Driver
-    // Options$Driver
-    // Options#getDriver
-    // Options#driver
-    // Options#getSelectedDriver
     private Options options;
 
     static Victor left1, left2;
@@ -42,16 +33,13 @@ public class Robot extends SimpleRobot {
 
     protected Driver driver;
 
-    static final int DISTANCE_FROM_WALL_TO_SHOOT = 11 * 12; // 11 feet
+    static final int DISTANCE = 6 * 12; // 6 feet
     static boolean isReload;
 
     public void robotInit() {
 
         this.options = new Options();
 
-        SmartDashboard.putData("Autonomous Position", this.options.position);
-        SmartDashboard.putData("Autonomous Direction", this.options.driveDirection);
-        SmartDashboard.putData("Autonomous Turn Amount", this.options.turnAmount);
         SmartDashboard.putData("Trigger Piston", this.options.trigger);
         SmartDashboard.putData("Shooter Piston", this.options.shooter);
         SmartDashboard.putData("Arm Piston", this.options.arms);
@@ -88,42 +76,9 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         Robot.start();
 
-        System.out.print(options.getSelectedPosition().toString());
-        System.out.print(" " + options.getSelectedDriveDirection().toString());
-        System.out.print(" " + options.getSelectedTrunAmount().toString());
-        System.out.println();
-
-        if (options.getPosition(Options.Position.LEFT) || options.getPosition(Options.Position.RIGHT)) {
-            Robot.grip.extend();
-            Robot.driveDistance(-132);
-            Robot.shoot(true);
-        } else if (options.getPosition(Options.Position.MIDDLE)) {
-            if (options.getDriveDirection(Options.DriveDirection.LEFT)) {
-                if (options.getTurnAmount(Options.TurnAmount.DEGREES_90)) {
-                    Robot.spinAround(90);
-                    Robot.driveDistance(6 * 12);
-                    Robot.spinAround(-90);
-                    Robot.shoot(true);
-                } else if (options.getTurnAmount(Options.TurnAmount.DEGREES_45)) {
-                    Robot.spinAround(45);
-                    Robot.driveDistance((int) (12.5 * 12));
-                    Robot.spinAround(-45);
-                    Robot.shoot(true);
-                }
-            } else if (options.getDriveDirection(Options.DriveDirection.RIGHT)) {
-                if (options.getTurnAmount(Options.TurnAmount.DEGREES_90)) {
-                    Robot.spinAround(-90);
-                    Robot.driveDistance(6 * 12);
-                    Robot.spinAround(90);
-                    Robot.shoot(true);
-                } else if (options.getTurnAmount(Options.TurnAmount.DEGREES_45)) {
-                    Robot.spinAround(-45);
-                    Robot.driveDistance((int) (12.5 * 12));
-                    Robot.spinAround(45);
-                    Robot.shoot(true);
-                }
-            }
-        }
+        Robot.grip.extend();
+        Robot.driveDistance(-Robot.DISTANCE);
+        Robot.shoot(true);
 
         Robot.stop();
     }
