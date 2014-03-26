@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 public class Options {
 
     public final SendableChooser autoMode;
-    public final SendableChooser trigger, shooter, grip, arms;
     public final SendableChooser driver;
 
     public static class AutoMode {
@@ -15,6 +14,8 @@ public class Options {
 
         private static final int val_ONE_BALL = 0;
         private static final int val_TWO_BALL = 1;
+        private static final int val_DRIVE_ONLY = 2;
+        private static final int val_NOTHING = 3;
 
         private AutoMode(int value) {
             this.value = value;
@@ -22,6 +23,8 @@ public class Options {
 
         public static final AutoMode ONE_BALL = new AutoMode(val_ONE_BALL);
         public static final AutoMode TWO_BALL = new AutoMode(val_TWO_BALL);
+        public static final AutoMode DRIVE_ONLY = new AutoMode(val_DRIVE_ONLY);
+        public static final AutoMode NOTHING = new AutoMode (val_NOTHING);
         //</editor-fold>
     }
 
@@ -65,30 +68,14 @@ public class Options {
         //</editor-fold>
     }
 
-    public Options() {        
-        // <Pistons>
+    public Options() {
 
         autoMode = new SendableChooser();
         autoMode.addDefault("One Ball", AutoMode.ONE_BALL);
         autoMode.addObject("Two Ball", AutoMode.TWO_BALL);
+        autoMode.addObject("Drive Only", AutoMode.DRIVE_ONLY);
+        autoMode.addObject("Nothing", AutoMode.NOTHING);
 
-        trigger = new SendableChooser();
-        trigger.addObject("Extended", Piston.EXTENDED);
-        trigger.addDefault("Retracted", Piston.RETRACTED);
-
-        shooter = new SendableChooser();
-        shooter.addObject("Extended", Piston.EXTENDED);
-        shooter.addDefault("Retracted", Piston.RETRACTED);
-
-        grip = new SendableChooser();
-        grip.addObject("Extended", Piston.EXTENDED);
-        grip.addDefault("Retracted", Piston.RETRACTED);
-
-        arms = new SendableChooser();
-        arms.addObject("Extended", Piston.EXTENDED);
-        arms.addDefault("Retracted", Piston.RETRACTED);
-
-        // </Pistons>
         driver = new SendableChooser();
         driver.addDefault("Dual Driver", Driver.DUAL_DRIVER);
         driver.addObject("Test Driver", Driver.TEST_DRIVER);
@@ -100,14 +87,6 @@ public class Options {
 
     public Object getSelectedAutoMode() {
         return this.autoMode.getSelected();
-    }
-
-    public boolean getPiston(SendableChooser pistonOption, Piston piston) {
-        return pistonOption.getSelected() == piston;
-    }
-
-    public Object getSelectedPiston(SendableChooser pistionOption) {
-        return pistionOption.getSelected();
     }
 
     public boolean getDriver(Driver driverOption) {

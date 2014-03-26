@@ -5,8 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DualDriver implements Driver {
 
-    private final double Kp = 0.03, MAX_CENTRE_VALUE = 0.2;
-
+    private final double Kp = 0.01, MAX_CENTRE_VALUE = 0.2;
     private boolean isDrivingStraight = false;
 
     public DualDriver() {
@@ -48,6 +47,7 @@ public class DualDriver implements Driver {
                 Robot.grip.retract();
                 Timer.delay(0.5);
             }
+            
             if (Robot.arms.isExtended()) {
                 Robot.arms.retract();
             }

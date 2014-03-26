@@ -33,9 +33,9 @@ public class Robot extends SimpleRobot {
 
     protected Driver driver;
 
-    static final int DISTANCE_TO_SHOOT_FROM_START = 6 * 12; // 6 feet
+    static final int DISTANCE_TO_SHOOT_FROM_START = 12 * 12 + 6; // 12.5 feet
     static final double time_TRIGGER = 0.0, time_SHOOTER = 0.0;
-    static final double time_ARMS = 0.0, time_GRIP = 0.0;
+    static final double time_ARMS = 1.5, time_GRIP = 0.0;
 
     static boolean isReload;
 
@@ -44,12 +44,8 @@ public class Robot extends SimpleRobot {
         this.options = new Options();
 
         SmartDashboard.putData("Auto Mode", this.options.autoMode);
-        SmartDashboard.putData("Trigger Piston", this.options.trigger);
-        SmartDashboard.putData("Shooter Piston", this.options.shooter);
-        SmartDashboard.putData("Arm Piston", this.options.arms);
-        SmartDashboard.putData("Grip Piston", this.options.grip);
         SmartDashboard.putData("Driver", this.options.driver);
-        SmartDashboard.putBoolean("Shooter", Robot.isReload);
+        SmartDashboard.putBoolean("Shooter", !Robot.isReload);
 
         Robot.left1 = new Victor(2);
         Robot.left2 = new Victor(4);
@@ -81,28 +77,27 @@ public class Robot extends SimpleRobot {
     public void autonomous() {
         Robot.start();
 
-        if (this.options.getAutoMode(Options.AutoMode.ONE_BALL)) {
+        //if (this.options.getAutoMode(Options.AutoMode.ONE_BALL)) {
             Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
             Robot.shoot(true);
-        } else if (this.options.getAutoMode(Options.AutoMode.TWO_BALL)) {
+        /*} else if (this.options.getAutoMode(Options.AutoMode.TWO_BALL)) {
             Robot.grip.extend();
-            Robot.arms.retract();
-            Timer.delay(0.5); // time to lower arms
+            Robot.arms.extend();
+            Timer.delay(time_ARMS);
             Robot.grip.retract();
 
             Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
-            Robot.shoot(true);
+            Robot.shoot(true, false); // reload without opening arms
             Robot.arms.retract();
             while (Robot.isReload) {
                 Robot.reload();
             }
-            Timer.delay(0.25); // time to raise arms after shooter is ready
+            Timer.delay(0.5); // time to raise arms after shooter is ready
             Robot.shoot(true);
-            while (isAutonomous() && Robot.isReload) { // reload until auto is over
-                Robot.reload();
-            }
 
-        }
+        } else if (this.options.getAutoMode(Options.AutoMode.DRIVE_ONLY)) {
+            Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
+        }*/
 
         Robot.stop();
     }
@@ -114,11 +109,10 @@ public class Robot extends SimpleRobot {
             this.driver = new TestDriver();
         }
 
-        trigger.setExtended(options.getPiston(options.trigger, Options.Piston.EXTENDED));
-        shooter.setExtended(options.getPiston(options.shooter, Options.Piston.EXTENDED));
-        arms.setExtended(options.getPiston(options.arms, Options.Piston.EXTENDED));
-        grip.setExtended(options.getPiston(options.grip, Options.Piston.EXTENDED));
-
+        arms.setExtended(false);
+        trigger.setExtended(false);
+        shooter.setExtended(false);
+        grip.setExtended(false);
         Robot.start();
 
         //Robot.reload();
@@ -200,16 +194,16 @@ public class Robot extends SimpleRobot {
                 Robot.shooter.off();
                 Robot.shooter.retract();
                 Robot.isReload = false;
-
-                // TODO: play sound?
             }
+
+            // TODO: play sound?
         }
         //</editor-fold>
     }
 
-    public static void shoot(boolean doReload) {
+    public static void shoot(boolean doReload, boolean checkArms) {
         //<editor-fold defaultstate="collapsed" desc="Shoot">
-        if (Robot.grip.isRetracted()) {
+        if (Robot.grip.isRetracted() && checkArms) {
             Robot.grip.extend();
             Timer.delay(0.10);
             Robot.grip.off();
@@ -222,6 +216,10 @@ public class Robot extends SimpleRobot {
             Robot.reload();
         }
         //</editor-fold>
+    }
+    
+    public static void shoot (boolean doReload) {
+        Robot.shoot(doReload, true);
     }
 
     public static void driveDistance(int inches) {
