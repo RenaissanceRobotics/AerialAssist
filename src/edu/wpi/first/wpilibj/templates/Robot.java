@@ -4,262 +4,308 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SimpleRobot {
 
-    private Options options;
+    private XboxController xbox1, xbox2;
 
-    static Victor left1, left2;
-    static Victor right1, right2;
-    static RobotDrive drive;
+    private Victor leftFront, leftBack, rightFront, rightBack;
+    private RobotDrive drive;
+    private Encoder encoder;
+    private Gyro gyro;
 
-    static XboxController xbox, xbox2;
-    static Gyro gyro;
+    private Compressor compressor;
 
-    static Compressor compressor;
+    private Piston trigger, shooter, grip, arms;
+    private DigitalInput shooterSwitch;
 
-    static Encoder encoder;
+    private boolean isReloading;
 
-    static Piston trigger, shooter;
-    static Piston arms, grip;
+    private SendableChooser OPTION_AUTO_MODE;
 
-    static DigitalInput triggerSwitch;
-
-    protected Driver driver;
-
-    static final int DISTANCE_TO_SHOOT_FROM_START = 12 * 12 + 6; // 12.5 feet
-    static final double time_TRIGGER = 0.0, time_SHOOTER = 0.0;
-    static final double time_ARMS = 1.5, time_GRIP = 0.0;
-
-    static boolean isReload;
+    private int DISTANCE_TO_DRIVE_FROM_START;
+    private double DEADBAND;
+    private boolean isDrivingStraight;
 
     public void robotInit() {
+        this.xbox1 = new XboxController(1);
+        this.xbox2 = new XboxController(2);
 
-        this.options = new Options();
+        this.leftFront = new Victor(2);
+        this.leftBack = new Victor(4);
+        this.rightFront = new Victor(1);
+        this.rightBack = new Victor(3);
+        this.drive = new RobotDrive(leftFront, leftBack, rightFront, rightBack);
+        this.encoder = new Encoder(2, 3, false, CounterBase.EncodingType.k1X);
+        this.encoder.setDistancePerPulse(0.051);
+        this.gyro = new Gyro(1);
+        this.gyro.setSensitivity(0.007);
 
-        SmartDashboard.putData("Auto Mode", this.options.autoMode);
-        SmartDashboard.putData("Driver", this.options.driver);
-        SmartDashboard.putBoolean("Shooter", !Robot.isReload);
+        this.compressor = new Compressor(1, 1);
 
-        Robot.left1 = new Victor(2);
-        Robot.left2 = new Victor(4);
-        Robot.right1 = new Victor(1);
-        Robot.right2 = new Victor(3);
-        Robot.drive = new RobotDrive(left1, left2, right1, right2);
+        this.trigger = new Piston(8, 7, false);
+        this.shooter = new Piston(6, 5, false);
+        this.grip = new Piston(1, 2, false);
+        this.arms = new Piston(3, 4, true);
+        this.shooterSwitch = new DigitalInput(4);
 
-        Robot.xbox = new XboxController(1);
-        Robot.xbox2 = new XboxController(2);
+        this.isReloading = false;
 
-        Robot.gyro = new Gyro(1);
-        Robot.gyro.setSensitivity(0.007);
+        this.OPTION_AUTO_MODE = new SendableChooser();
+        this.OPTION_AUTO_MODE.addDefault("One Ball", AutoMode.ONE_BALL);
+        this.OPTION_AUTO_MODE.addObject("Two Ball", AutoMode.TWO_BALL);
+        this.OPTION_AUTO_MODE.addObject("Drive Only", AutoMode.DRIVE_ONLY);
+        this.OPTION_AUTO_MODE.addObject("Nothing", AutoMode.NOTHING);
 
-        Robot.compressor = new Compressor(1, 1);
-
-        Robot.encoder = new Encoder(2, 3, false, CounterBase.EncodingType.k1X);
-        Robot.encoder.setDistancePerPulse(0.051);
-
-        Robot.trigger = new Piston(8, 7, false);
-        Robot.shooter = new Piston(6, 5, false);
-        Robot.grip = new Piston(1, 2, false);
-        Robot.arms = new Piston(3, 4, true);
-
-        Robot.triggerSwitch = new DigitalInput(4);
-
-        Robot.isReload = false;
+        this.DISTANCE_TO_DRIVE_FROM_START = 12 * 12 + 6; // 12.5 feet
+        this.DEADBAND = 0.2;
+        this.isDrivingStraight = true;
     }
 
     public void autonomous() {
-        Robot.start();
+        // Can not use Objects In Switch
+        // SendableChooser#getSelected() returns an Object
+        if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.TWO_BALL) {
+            // Two Ball Auto
 
-        //if (this.options.getAutoMode(Options.AutoMode.ONE_BALL)) {
-            Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
-            Robot.shoot(true);
-        /*} else if (this.options.getAutoMode(Options.AutoMode.TWO_BALL)) {
-            Robot.grip.extend();
-            Robot.arms.extend();
-            Timer.delay(time_ARMS);
-            Robot.grip.retract();
+            // Grab the Ball
+            this.grip.extend();
+            this.arms.extend();
+            Timer.delay(2.0);
 
-            Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
-            Robot.shoot(true, false); // reload without opening arms
-            Robot.arms.retract();
-            while (Robot.isReload) {
-                Robot.reload();
-            }
-            Timer.delay(0.5); // time to raise arms after shooter is ready
-            Robot.shoot(true);
+            this.grip.retract();
 
-        } else if (this.options.getAutoMode(Options.AutoMode.DRIVE_ONLY)) {
-            Robot.driveDistance(-Robot.DISTANCE_TO_SHOOT_FROM_START);
-        }*/
+            // Drive
+            this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
+            Timer.delay(1.0);
 
-        Robot.stop();
+            // Shoot
+            this.shoot(true);
+
+            // Reload the Ball
+            this.arms.retract();
+            Timer.delay(2.0);
+            this.grip.extend();
+
+            // Shoot
+            Timer.delay(1.0);
+            this.shoot(true);
+
+        } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.DRIVE_ONLY) {
+            // Drive Forward Only
+
+            this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
+
+        } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.NOTHING) {
+            // Don't Do Anything
+
+            // WHOO
+        } else { // if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.ONE_BALL) {
+            // The Defualt one
+            // One Ball Auto
+
+            this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
+            this.shoot(true);
+
+        }
     }
 
     public void operatorControl() {
-        if (options.getDriver(Options.Driver.DUAL_DRIVER)) {
-            this.driver = new DualDriver();
-        } else if (options.getDriver(Options.Driver.TEST_DRIVER)) {
-            this.driver = new TestDriver();
-        }
 
-        arms.setExtended(false);
-        trigger.setExtended(false);
-        shooter.setExtended(false);
-        grip.setExtended(false);
-        Robot.start();
+        this.start();
 
-        //Robot.reload();
         while (isOperatorControl() && isEnabled()) {
-            this.driver.drive();
+            // Driver One
+            double rightX = this.xbox1.getAxis(XboxController.AxisType.kRightX);
+            double leftY = this.xbox2.getAxis(XboxController.AxisType.kLeftY);
+            double Kp = 0.01;
 
-            if (Robot.isReload) {
-                Robot.reload();
+            // Just to update the RobotDrive
+            // Then if needed change the values
+            this.drive.drive(0.0, 0.0);
+            if (leftY <= this.DEADBAND && leftY >= -this.DEADBAND) {
+                // only the right stick -> rotate
+                // needs to be tested with the RobotDrive
+                this.drive.drive(0.0, rightX);
+
+                this.isDrivingStraight = false;
+            } else if (rightX <= this.DEADBAND && rightX >= -this.DEADBAND) {
+                // Drive stright using the gyro
+                if (!this.isDrivingStraight) {
+                    // if first time driving stright then reset the gyro
+                    this.isDrivingStraight = true;
+                    this.gyro.reset();
+                }
+                
+                // Have to reverse the angle depending on the direction you are driving
+                if (leftY <= -this.DEADBAND) { // leftY neative -> Driving forward
+                    this.drive.drive(-leftY, -this.gyro.getAngle() * Kp);
+                } else if (leftY >= this.DEADBAND) { // leftY positive -> Driving backward
+                    this.drive.drive(-leftY, this.gyro.getAngle() * Kp);
+                }
+            } else { // using the left and right to turn
+                this.drive.drive(-leftY, rightX / 1.5);
+
+                this.isDrivingStraight = false;
             }
-            Robot.arms.countTime();
-            Robot.grip.countTime();
-            Robot.shooter.countTime();
-            Robot.trigger.countTime();
+            // End Driver One
 
-            SmartDashboard.putBoolean("Shooter", !Robot.isReload);
+            // Driver Two
+            // ------------------- Arm Control ---------------------
+            if (this.xbox2.getX(GenericHID.Hand.kLeft) <= -0.5) { // Joystick forward
+                // Raise Arms
+                if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
+                    this.grip.retract();
+                    Timer.delay(0.25);
+                }
+                this.arms.extend();
+            } else if (this.xbox2.getX(GenericHID.Hand.kLeft) >= 0.5) { // Joystick backward
+                // Lower Arms
+                this.arms.retract();
+            }
 
+            // ------------------- Grip Control --------------------
+            if (this.xbox2.getXButton()) { // X Button Grip
+                this.grip.retract();
+            } else if (this.xbox2.getBButton()) { // B Button Release
+                this.grip.extend();
+            }
+
+            // ------------------- Shooting ------------------------
+            if (this.xbox2.getTrigger(GenericHID.Hand.kRight)) {
+                // Right Trigger Shoot With Reload
+                this.shoot(true);
+            }
+            if (this.xbox2.getTrigger(GenericHID.Hand.kLeft)) {
+                // Left Trigger Reload
+                this.reload();
+            }
+
+            // ------------------- Misc Control for Shooter --------
+            if (this.xbox2.getBumper(GenericHID.Hand.kRight)) {
+                // Right Bumper Disable Shooter
+                this.disableShoter();
+            }
+            if (this.xbox2.getBumper(GenericHID.Hand.kLeft)) {
+                // Left Bumper Shoot Without Reload
+                this.shoot(false);
+            }
+
+            // End Driver Two
+            // Counts of Time to Turn the Solenoids off so that Manual Control Works
+            this.turnOffSolenoidsWhenReady();
+
+            SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
+            
+            Timer.delay(0.01);
         }
-        Robot.stop();
+
+        this.stop();
+
     }
 
     public void test() {
-        // Test only run compressor
-
-        //<editor-fold defaultstate="collapsed" desc="Test">
-        Robot.encoder.start();
-
-        Robot.compressor.start();
+        this.start();
 
         while (isTest() && isEnabled()) {
 
         }
-        Robot.compressor.stop();
 
-        Robot.encoder.stop();
-        //</editor-fold>
+        this.stop();
     }
 
-    public static void drive(double amt) {
-        //<editor-fold defaultstate="collapsed" desc="Drive">
-        Robot.left1.set(amt);
-        Robot.left2.set(amt);
-        Robot.right1.set(-amt);
-        Robot.right2.set(-amt);
-        //</editor-fold>
-    }
-
-    public static void drive(double amtL, double amtR) {
-        // <editor-fold defaultstate="collapsed" desc="Drive">
-        Robot.left1.set(amtL);
-        Robot.left2.set(amtL);
-        Robot.right1.set(amtR);
-        Robot.right2.set(amtR);
-        // </editor-fold>
-    }
-
-    public static void spinAround(int deg) {
-        //<editor-fold defaultstate="collapsed" desc="Spin">
-        gyro.reset();
-        if (deg < 0) { //Left
-            while (gyro.getAngle() > deg) {
-                Robot.drive(-0.4, -0.4);
-            }
-        } else if (deg > 0) { //Right
-            while (gyro.getAngle() < deg) {
-                drive(0.4, 0.4);
-            }
-        }
-        gyro.reset();
-        //</editor-fold>
-    }
-
-    public static void reload() {
-        //<editor-fold defaultstate="collapsed" desc="Reload">
-        if (!Robot.isReload) {
-            Robot.shooter.extend();
-            Robot.isReload = true;
-        } else {
-            if (Robot.triggerSwitch.get()) {
-                Robot.shooter.off();
-                Robot.shooter.retract();
-                Robot.isReload = false;
-            }
-
-            // TODO: play sound?
-        }
-        //</editor-fold>
-    }
-
-    public static void shoot(boolean doReload, boolean checkArms) {
-        //<editor-fold defaultstate="collapsed" desc="Shoot">
-        if (Robot.grip.isRetracted() && checkArms) {
-            Robot.grip.extend();
-            Timer.delay(0.10);
-            Robot.grip.off();
-        }
-        Robot.trigger.extend();
+    private void shoot(boolean doReload) {
+        this.trigger.extend();
         Timer.delay(0.5);
-        Robot.trigger.retract();
+        this.trigger.retract();
 
         if (doReload) {
-            Robot.reload();
+            this.reload();
         }
-        //</editor-fold>
-    }
-    
-    public static void shoot (boolean doReload) {
-        Robot.shoot(doReload, true);
     }
 
-    public static void driveDistance(int inches) {
-        //<editor-fold defaultstate="collapsed" desc="Drive Distance">
+    private void disableShoter() {
+        this.shooter.extend();
+        Timer.delay(0.5);
+        this.trigger.extend();
+        Timer.delay(0.1);
+        this.shooter.retract();
+        this.trigger.retract();
+    }
+
+    private void reload() {
+        if (!this.isReloading) {
+            this.isReloading = true;
+            this.shooter.extend();
+        } else if (this.shooterSwitch.get()) {
+            this.isReloading = false;
+            this.shooter.retract();
+        }
+    }
+
+    private void start() {
+        this.gyro.reset();
+        this.compressor.start();
+        this.encoder.start();
+    }
+
+    private void stop() {
+        this.gyro.reset();
+        this.compressor.stop();
+        this.encoder.stop();
+    }
+
+    private void driveDistance(int inches) { // copied from previous code because it worked
         double Kp = 0.01;
-        Robot.encoder.reset();
+        this.encoder.reset();
         gyro.reset();
         if (inches > 0) {
-            while (Robot.encoder.getDistance() <= inches) {
-                Robot.drive.drive(0.75, -Robot.gyro.getAngle() * Kp);
+            while (this.encoder.getDistance() <= inches) {
+                this.drive.drive(0.75, -this.gyro.getAngle() * Kp);
             }
         } else {
-            while (Robot.encoder.getDistance() >= inches) {
-                Robot.drive.drive(-0.75, Robot.gyro.getAngle() * Kp);
+            while (this.encoder.getDistance() >= inches) {
+                this.drive.drive(-0.75, this.gyro.getAngle() * Kp);
             }
         }
-        Robot.drive(0.0);
-        //</editor-fold>
+        this.drive.drive(0.0, 0.0);
     }
 
-    public static void disableShooter() {
-        //<editor-fold defaultstate="collapsed" desc="Disable Shooter">
-        Robot.shooter.extend();
-        Timer.delay(0.5);
-        Robot.trigger.extend();
-        Timer.delay(0.1);
-        Robot.shooter.retract();
-        Robot.trigger.retract();
-        //</editor-fold>
+    private void turnOffSolenoidsWhenReady() {
+        this.shooter.countTime();
+        this.trigger.countTime();
+        this.arms.countTime();
+        this.grip.countTime();
     }
 
-    public static void start() {
-        Robot.gyro.reset();
-        Robot.compressor.start();
-        Robot.encoder.start();
-    }
+    private static class AutoMode {
 
-    public static void stop() {
-        Robot.gyro.reset();
-        Robot.compressor.stop();
-        Robot.encoder.stop();
+        private static final int val_ONE_BALL = 0;
+        private static final int val_TWO_BALL = 1;
+        private static final int val_DRIVE_ONLY = 2;
+        private static final int val_NOTHING = 3;
+
+        private final int value;
+
+        private AutoMode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+
+        public static final AutoMode ONE_BALL = new AutoMode(val_ONE_BALL);
+        public static final AutoMode TWO_BALL = new AutoMode(val_TWO_BALL);
+        public static final AutoMode DRIVE_ONLY = new AutoMode(val_DRIVE_ONLY);
+        public static final AutoMode NOTHING = new AutoMode(val_NOTHING);
     }
 }

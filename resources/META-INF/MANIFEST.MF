@@ -1,4 +1,4 @@
-MIDlet-Name: AerialAssist
+MIDlet-Name: AerialAssist_DK_REDO
 MIDlet-Version: 1.0.0
 MIDlet-Vendor: FIRST
 MIDlet-1: Robot, , edu.wpi.first.wpilibj.templates.Robot
