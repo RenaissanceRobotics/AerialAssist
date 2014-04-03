@@ -176,6 +176,10 @@ public class Robot extends SimpleRobot {
             // End Driver Two
             // Counts of Time to Turn the Solenoids off so that Manual Control Works
             this.turnOffSolenoidsWhenReady();
+            
+            if (this.isReloading) {
+                this.reload();
+            }
 
             SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
             
