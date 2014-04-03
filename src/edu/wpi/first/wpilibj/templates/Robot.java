@@ -156,6 +156,10 @@ public class Robot extends SimpleRobot {
             // ------------------- Shooting ------------------------
             if (this.xbox2.getTrigger(GenericHID.Hand.kRight)) {
                 // Right Trigger Shoot With Reload
+                if (this.grip.isExtended()) {
+                    this.grip.retract();
+                    Timer.delay(0.25);
+                }
                 this.shoot(true);
             }
             if (this.xbox2.getTrigger(GenericHID.Hand.kLeft)) {
@@ -170,6 +174,10 @@ public class Robot extends SimpleRobot {
             }
             if (this.xbox2.getBumper(GenericHID.Hand.kLeft)) {
                 // Left Bumper Shoot Without Reload
+                if (this.grip.isExtended()) {
+                    this.grip.retract();
+                    Timer.delay(0.25);
+                }
                 this.shoot(false);
             }
 
