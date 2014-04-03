@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 public class Robot extends SimpleRobot {
 
     private XboxController xbox1, xbox2;
@@ -63,7 +62,7 @@ public class Robot extends SimpleRobot {
         this.OPTION_AUTO_MODE.addObject("Two Ball", AutoMode.TWO_BALL);
         this.OPTION_AUTO_MODE.addObject("Drive Only", AutoMode.DRIVE_ONLY);
         this.OPTION_AUTO_MODE.addObject("Nothing", AutoMode.NOTHING);
-        
+
         SmartDashboard.putData("Auto Option", this.OPTION_AUTO_MODE);
 
         this.DISTANCE_TO_DRIVE_FROM_START = 12 * 12 + 6; // 12.5 feet
@@ -71,6 +70,10 @@ public class Robot extends SimpleRobot {
 
     public void autonomous() {
         this.start();
+        this.grip.setExtended(false);
+        this.arms.setExtended(false);
+        this.trigger.setExtended(false);
+        this.shooter.setExtended(false);
         // Can not use Objects In Switch
         // SendableChooser#getSelected() returns an Object
         if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.TWO_BALL) {
@@ -114,8 +117,8 @@ public class Robot extends SimpleRobot {
             // The Defualt one
             // One Ball Auto
             System.out.println("One Ball");
-            this.grip.extend();
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
+            this.grip.extend();
             Timer.delay(0.25);
             this.shoot(true);
 
@@ -134,8 +137,6 @@ public class Robot extends SimpleRobot {
 
             // Just to update the RobotDrive
             // Then if needed change the values
-           
-            
             this.drive.arcadeDrive(-leftY, -rightX);
             // End Driver One
 
@@ -146,7 +147,7 @@ public class Robot extends SimpleRobot {
                 this.arms.extend();
             } else if (this.xbox2.getY(GenericHID.Hand.kLeft) <= -0.5) { // Joystick backward
                 // Raise Arms
-                 if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
+                if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
                     this.grip.retract();
                     Timer.delay(0.25);
                 }
@@ -191,13 +192,13 @@ public class Robot extends SimpleRobot {
             // End Driver Two
             // Counts of Time to Turn the Solenoids off so that Manual Control Works
             this.turnOffSolenoidsWhenReady();
-            
+
             if (this.isReloading) {
                 this.reload();
             }
 
             SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
-                        
+
             Timer.delay(0.01);
         }
 
@@ -209,7 +210,7 @@ public class Robot extends SimpleRobot {
         this.start();
 
         while (isTest() && isEnabled()) {
-
+            this.turnOffSolenoidsWhenReady();
         }
 
         this.stop();
@@ -244,7 +245,7 @@ public class Robot extends SimpleRobot {
         }
     }
 
-    private void start() {
+    private void start() {        
         this.gyro.reset();
         this.compressor.start();
         this.encoder.start();
@@ -278,8 +279,8 @@ public class Robot extends SimpleRobot {
         this.arms.countTime();
         this.grip.countTime();
     }
-    
-    private void setMotors (double leftAmt, double rightAmt) {
+
+    private void setMotors(double leftAmt, double rightAmt) {
         this.leftBack.set(leftAmt);
         this.leftFront.set(leftAmt);
         this.rightBack.set(rightAmt);
