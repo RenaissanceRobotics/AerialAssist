@@ -134,14 +134,14 @@ public class Robot extends SimpleRobot {
 
             // Driver Two
             // ------------------- Arm Control ---------------------
-            if (this.xbox2.getY(GenericHID.Hand.kLeft) <= -0.5) { // Joystick forward
+            if (this.xbox2.getY(GenericHID.Hand.kLeft) >= 0.5) { // Joystick forward
                 // Raise Arms
                 if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
                     this.grip.retract();
                     Timer.delay(0.25);
                 }
                 this.arms.extend();
-            } else if (this.xbox2.getY(GenericHID.Hand.kLeft) >= 0.5) { // Joystick backward
+            } else if (this.xbox2.getY(GenericHID.Hand.kLeft) <= -0.5) { // Joystick backward
                 // Lower Arms
                 this.arms.retract();
             }
