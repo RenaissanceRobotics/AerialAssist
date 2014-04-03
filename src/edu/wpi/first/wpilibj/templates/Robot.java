@@ -65,7 +65,7 @@ public class Robot extends SimpleRobot {
 
         SmartDashboard.putData("Auto Option", this.OPTION_AUTO_MODE);
 
-        this.DISTANCE_TO_DRIVE_FROM_START = 12 * 12 + 6; // 12.5 feet
+        this.DISTANCE_TO_DRIVE_FROM_START = 10 * 12 + 6; // 10.5 feet
     }
 
     public void autonomous() {
