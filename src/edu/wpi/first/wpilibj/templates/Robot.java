@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-// Just Testing making a change to work with git...
 
 public class Robot extends SimpleRobot {
 
@@ -64,14 +63,18 @@ public class Robot extends SimpleRobot {
         this.OPTION_AUTO_MODE.addObject("Two Ball", AutoMode.TWO_BALL);
         this.OPTION_AUTO_MODE.addObject("Drive Only", AutoMode.DRIVE_ONLY);
         this.OPTION_AUTO_MODE.addObject("Nothing", AutoMode.NOTHING);
+        
+        SmartDashboard.putData("Auto Option", this.OPTION_AUTO_MODE);
 
         this.DISTANCE_TO_DRIVE_FROM_START = 12 * 12 + 6; // 12.5 feet
     }
 
     public void autonomous() {
+        this.start();
         // Can not use Objects In Switch
         // SendableChooser#getSelected() returns an Object
         if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.TWO_BALL) {
+            System.out.println("Two Ball");
             // Two Ball Auto
 
             // Grab the Ball
@@ -98,22 +101,25 @@ public class Robot extends SimpleRobot {
             this.shoot(true);
 
         } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.DRIVE_ONLY) {
+            System.out.println("Drive Only");
             // Drive Forward Only
 
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
 
         } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.NOTHING) {
             // Don't Do Anything
-
+            System.out.println("Nothing");
             // WHOO
         } else { // if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.ONE_BALL) {
             // The Defualt one
             // One Ball Auto
+            System.out.println("One Ball");
 
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
             this.shoot(true);
 
         }
+        this.stop();
     }
 
     public void operatorControl() {
@@ -190,9 +196,7 @@ public class Robot extends SimpleRobot {
             }
 
             SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
-            
-            System.out.println("Switch:" + this.shooterSwitch.get());
-            
+                        
             Timer.delay(0.01);
         }
 
