@@ -134,14 +134,14 @@ public class Robot extends SimpleRobot {
 
             // Driver Two
             // ------------------- Arm Control ---------------------
-            if (this.xbox2.getX(GenericHID.Hand.kLeft) <= -0.5) { // Joystick forward
+            if (this.xbox2.getY(GenericHID.Hand.kLeft) <= -0.5) { // Joystick forward
                 // Raise Arms
                 if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
                     this.grip.retract();
                     Timer.delay(0.25);
                 }
                 this.arms.extend();
-            } else if (this.xbox2.getX(GenericHID.Hand.kLeft) >= 0.5) { // Joystick backward
+            } else if (this.xbox2.getY(GenericHID.Hand.kLeft) >= 0.5) { // Joystick backward
                 // Lower Arms
                 this.arms.retract();
             }
@@ -156,8 +156,8 @@ public class Robot extends SimpleRobot {
             // ------------------- Shooting ------------------------
             if (this.xbox2.getTrigger(GenericHID.Hand.kRight)) {
                 // Right Trigger Shoot With Reload
-                if (this.grip.isExtended()) {
-                    this.grip.retract();
+                if (this.grip.isRetracted()) {
+                    this.grip.extend();
                     Timer.delay(0.25);
                 }
                 this.shoot(true);
@@ -174,8 +174,8 @@ public class Robot extends SimpleRobot {
             }
             if (this.xbox2.getBumper(GenericHID.Hand.kLeft)) {
                 // Left Bumper Shoot Without Reload
-                if (this.grip.isExtended()) {
-                    this.grip.retract();
+                if (this.grip.isRetracted()) {
+                    this.grip.extend();
                     Timer.delay(0.25);
                 }
                 this.shoot(false);
