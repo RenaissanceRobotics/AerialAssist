@@ -208,6 +208,10 @@ public class Robot extends SimpleRobot {
 
     public void test() {
         this.start();
+        this.grip.setExtended(false);
+        this.arms.setExtended(false);
+        this.trigger.setExtended(false);
+        this.shooter.setExtended(false);
 
         while (isTest() && isEnabled()) {
             this.turnOffSolenoidsWhenReady();
