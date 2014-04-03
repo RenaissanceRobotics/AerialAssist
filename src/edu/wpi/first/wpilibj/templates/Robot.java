@@ -34,8 +34,6 @@ public class Robot extends SimpleRobot {
     private SendableChooser OPTION_AUTO_MODE;
 
     private int DISTANCE_TO_DRIVE_FROM_START;
-    private double DEADBAND;
-    private boolean isDrivingStraight;
 
     public void robotInit() {
         this.xbox1 = new XboxController(1);
@@ -68,8 +66,6 @@ public class Robot extends SimpleRobot {
         this.OPTION_AUTO_MODE.addObject("Nothing", AutoMode.NOTHING);
 
         this.DISTANCE_TO_DRIVE_FROM_START = 12 * 12 + 6; // 12.5 feet
-        this.DEADBAND = 0.2;
-        this.isDrivingStraight = true;
     }
 
     public void autonomous() {
@@ -127,37 +123,13 @@ public class Robot extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
             // Driver One
             double rightX = this.xbox1.getAxis(XboxController.AxisType.kRightX);
-            double leftY = this.xbox2.getAxis(XboxController.AxisType.kLeftY);
-            double Kp = 0.01;
+            double leftY = this.xbox1.getAxis(XboxController.AxisType.kLeftY);
 
             // Just to update the RobotDrive
             // Then if needed change the values
-            this.drive.drive(0.0, 0.0);
-            if (leftY <= this.DEADBAND && leftY >= -this.DEADBAND) {
-                // only the right stick -> rotate
-                // needs to be tested with the RobotDrive
-                this.drive.drive(0.0, rightX);
-
-                this.isDrivingStraight = false;
-            } else if (rightX <= this.DEADBAND && rightX >= -this.DEADBAND) {
-                // Drive stright using the gyro
-                if (!this.isDrivingStraight) {
-                    // if first time driving stright then reset the gyro
-                    this.isDrivingStraight = true;
-                    this.gyro.reset();
-                }
-                
-                // Have to reverse the angle depending on the direction you are driving
-                if (leftY <= -this.DEADBAND) { // leftY neative -> Driving forward
-                    this.drive.drive(-leftY, -this.gyro.getAngle() * Kp);
-                } else if (leftY >= this.DEADBAND) { // leftY positive -> Driving backward
-                    this.drive.drive(-leftY, this.gyro.getAngle() * Kp);
-                }
-            } else { // using the left and right to turn
-                this.drive.drive(-leftY, rightX / 1.5);
-
-                this.isDrivingStraight = false;
-            }
+           
+            
+            this.drive.arcadeDrive(-leftY, -rightX);
             // End Driver One
 
             // Driver Two
@@ -206,6 +178,8 @@ public class Robot extends SimpleRobot {
             this.turnOffSolenoidsWhenReady();
 
             SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
+            
+            System.out.println("Switch:" + this.shooterSwitch.get());
             
             Timer.delay(0.01);
         }
@@ -286,6 +260,13 @@ public class Robot extends SimpleRobot {
         this.trigger.countTime();
         this.arms.countTime();
         this.grip.countTime();
+    }
+    
+    private void setMotors (double leftAmt, double rightAmt) {
+        this.leftBack.set(leftAmt);
+        this.leftFront.set(leftAmt);
+        this.rightBack.set(rightAmt);
+        this.rightFront.set(rightAmt);
     }
 
     private static class AutoMode {
