@@ -83,9 +83,10 @@ public class Robot extends SimpleRobot {
             // Grab the Ball
             this.grip.extend();
             this.arms.extend();
-            Timer.delay(2.0);
+            Timer.delay(1.5);
 
             this.grip.retract();
+            Timer.delay(0.5);
 
             // Drive
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
@@ -93,14 +94,20 @@ public class Robot extends SimpleRobot {
 
             // Shoot
             this.shoot(true);
+            this.reload();
 
             // Reload the Ball
             this.arms.retract();
+            this.reload();
             Timer.delay(2.0);
+            this.reload();
             this.grip.extend();
+            this.reload();
 
             // Shoot
             Timer.delay(1.0);
+            this.reload();
+            Timer.delay(0.5);
             this.shoot(true);
 
         } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.DRIVE_ONLY) {
