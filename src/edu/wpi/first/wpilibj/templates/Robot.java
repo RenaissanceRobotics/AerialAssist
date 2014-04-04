@@ -65,7 +65,7 @@ public class Robot extends SimpleRobot {
 
         SmartDashboard.putData("Auto Option", this.OPTION_AUTO_MODE);
 
-        this.DISTANCE_TO_DRIVE_FROM_START = 10 * 12 + 6; // 10.5 feet
+        this.DISTANCE_TO_DRIVE_FROM_START = 11 * 12; // 11 feet
     }
 
     public void autonomous() {
@@ -126,7 +126,7 @@ public class Robot extends SimpleRobot {
             System.out.println("One Ball");
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
             this.grip.extend();
-            Timer.delay(0.25);
+            Timer.delay(0.75);
             this.shoot(true);
 
         }
