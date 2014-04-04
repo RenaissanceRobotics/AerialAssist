@@ -138,6 +138,9 @@ public class Robot extends SimpleRobot {
         this.start();
 
         while (isOperatorControl() && isEnabled()) {
+            if (this.isReloading) {
+                this.reload();
+            }
             // Driver One
             double rightX = this.xbox1.getAxis(XboxController.AxisType.kRightX);
             double leftY = this.xbox1.getAxis(XboxController.AxisType.kLeftY);
@@ -199,10 +202,6 @@ public class Robot extends SimpleRobot {
             // End Driver Two
             // Counts of Time to Turn the Solenoids off so that Manual Control Works
             this.turnOffSolenoidsWhenReady();
-
-            if (this.isReloading) {
-                this.reload();
-            }
 
             SmartDashboard.putBoolean("Ready To Fire", !this.isReloading);
 
