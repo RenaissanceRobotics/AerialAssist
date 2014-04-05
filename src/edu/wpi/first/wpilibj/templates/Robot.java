@@ -90,7 +90,7 @@ public class Robot extends SimpleRobot {
 
             // Drive
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
-            Timer.delay(1.0);
+            Timer.delay(1.5);
 
             // Shoot
             this.shoot(true);
@@ -105,7 +105,7 @@ public class Robot extends SimpleRobot {
             this.reload();
 
             // Shoot
-            Timer.delay(1.0);
+            Timer.delay(1.5);
             this.reload();
             Timer.delay(0.75);
             this.shoot(true);
@@ -127,7 +127,7 @@ public class Robot extends SimpleRobot {
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
             Timer.delay(0.75);
             this.grip.extend();
-            Timer.delay(1.5);
+            Timer.delay(3.0);
             this.shoot(true);
 
         }
