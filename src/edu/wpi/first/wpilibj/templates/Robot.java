@@ -125,6 +125,7 @@ public class Robot extends SimpleRobot {
             // One Ball Auto
             System.out.println("One Ball");
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
+            Timer.delay(0.75);
             this.grip.extend();
             Timer.delay(1.5);
             this.shoot(true);
