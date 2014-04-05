@@ -124,18 +124,6 @@ public class Robot extends SimpleRobot {
             // The Defualt one
             // One Ball Auto
             System.out.println("One Ball");
-            // Grab the ball
-            this.grip.extend();
-            this.arms.extend();
-            Timer.delay(1.5);
-
-            this.grip.retract();
-            Timer.delay(0.5);
-            
-            // Raise the arms
-            this.arms.retract();
-            
-            // Drive
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
             this.grip.extend();
             Timer.delay(0.75);
@@ -267,7 +255,7 @@ public class Robot extends SimpleRobot {
         }
     }
 
-    private void start() {
+    private void start() {        
         this.gyro.reset();
         this.compressor.start();
         this.encoder.start();
