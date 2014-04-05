@@ -107,7 +107,7 @@ public class Robot extends SimpleRobot {
             // Shoot
             Timer.delay(1.0);
             this.reload();
-            Timer.delay(0.5);
+            Timer.delay(0.75);
             this.shoot(true);
 
         } else if (this.OPTION_AUTO_MODE.getSelected() == AutoMode.DRIVE_ONLY) {
@@ -126,7 +126,7 @@ public class Robot extends SimpleRobot {
             System.out.println("One Ball");
             this.driveDistance(-this.DISTANCE_TO_DRIVE_FROM_START);
             this.grip.extend();
-            Timer.delay(0.75);
+            Timer.delay(1.5);
             this.shoot(true);
 
         }
