@@ -136,65 +136,10 @@ public class Robot extends SimpleRobot {
     public void operatorControl() {
 
         this.start();
-
+        // TODO: Randomize the keys needed to drive
+        // TODO: Output the key to the SmartDashboard
         while (isOperatorControl() && isEnabled()) {
-            // Driver One
-            double rightX = this.xbox1.getAxis(XboxController.AxisType.kRightX);
-            double leftY = this.xbox1.getAxis(XboxController.AxisType.kLeftY);
-
-            // Just to update the RobotDrive
-            // Then if needed change the values
-            this.drive.arcadeDrive(-leftY, -rightX);
-            // End Driver One
-
-            // Driver Two
-            // ------------------- Arm Control ---------------------
-            if (this.xbox2.getY(GenericHID.Hand.kLeft) >= 0.5) { // Joystick forward
-                // Lower Arms
-                this.arms.extend();
-            } else if (this.xbox2.getY(GenericHID.Hand.kLeft) <= -0.5) { // Joystick backward
-                // Raise Arms
-                if (this.grip.isExtended()) { // Can't Raise Arms With Grip Open
-                    this.grip.retract();
-                    Timer.delay(0.25);
-                }
-                this.arms.retract();
-            }
-
-            // ------------------- Grip Control --------------------
-            if (this.xbox2.getXButton()) { // X Button Grip
-                this.grip.retract();
-            } else if (this.xbox2.getBButton()) { // B Button Release
-                this.grip.extend();
-            }
-
-            // ------------------- Shooting ------------------------
-            if (this.xbox2.getTrigger(GenericHID.Hand.kRight)) {
-                // Right Trigger Shoot With Reload
-                if (this.grip.isRetracted()) {
-                    this.grip.extend();
-                    Timer.delay(0.25);
-                }
-                this.shoot(true);
-            }
-            if (this.xbox2.getTrigger(GenericHID.Hand.kLeft)) {
-                // Left Trigger Reload
-                this.reload();
-            }
-
-            // ------------------- Misc Control for Shooter --------
-            if (this.xbox2.getBumper(GenericHID.Hand.kRight)) {
-                // Right Bumper Disable Shooter
-                this.disableShoter();
-            }
-            if (this.xbox2.getBumper(GenericHID.Hand.kLeft)) {
-                // Left Bumper Shoot Without Reload
-                if (this.grip.isRetracted()) {
-                    this.grip.extend();
-                    Timer.delay(0.25);
-                }
-                this.shoot(false);
-            }
+            // TODO: make the robot only drive forward for the correct input information
 
             // End Driver Two
             // Counts of Time to Turn the Solenoids off so that Manual Control Works
