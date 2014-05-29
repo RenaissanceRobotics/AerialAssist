@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+// http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
+// http://nvie.com/posts/a-successful-git-branching-model/
+
 public class Robot extends SimpleRobot {
 
     private XboxController xbox1, xbox2;
